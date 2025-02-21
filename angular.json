@@ -6,13 +6,14 @@
     "tickets-app": {
       "projectType": "application",
       "schematics": {
+        "standalone": true,
         "@schematics/angular:component": {
           "style": "scss"
         }
       },
       "root": "",
       "sourceRoot": "src",
-      "prefix": "app",
+      "prefix": "onebox",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:application",
@@ -97,5 +98,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }

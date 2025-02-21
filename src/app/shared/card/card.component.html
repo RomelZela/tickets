@@ -1,0 +1,22 @@
+<div class="card">
+  <div class="card__header">
+    <h2 class="card__title">{{ title | UpperCase }}</h2>
+    <p class="card__subtitle">{{ subtitle }}</p>
+  </div>
+
+  <img [src]="image" alt="" class="card__img">
+
+  <div class="card__content">
+    <div class="card__date-range">
+      <p class="card__start">{{ start_date }}</p>
+      <span>-</span>
+      <p class="card__end">{{ end_date }}</p>
+    </div>
+
+    <p class="card__description d-none d-md-flex">{{ description }}</p>
+
+    <a [routerLink]="action_button" class="card__button">
+      Comprar
+    </a>
+  </div>
+</div>

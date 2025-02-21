@@ -1,0 +1,15 @@
+.card{
+  display: flex;
+  flex-direction: column;
+
+  &__header{
+    color: $color-azul;
+  }
+
+  &__button{
+    background-color: $color-azul;
+    color: $color-blanco;
+    width: 100%;
+    text-align: center;
+  }
+}
