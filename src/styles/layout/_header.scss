@@ -1,0 +1,10 @@
+.header{
+  display: flex;
+  position: sticky;
+  top: 0;
+  background-color: $color-azul;
+  color: $color-blanco;
+  padding: 1rem;
+  width: 100%;
+  justify-content: center;
+}
