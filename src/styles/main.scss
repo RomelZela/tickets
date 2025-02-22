@@ -1,2 +1,5 @@
-@use 'base/reset';
-@use 'abstracts/variables';
+@import "../styles/abstracts/variables";
+@import "../styles/base/reset";
+@import "../styles/components/card";
+@import "../styles/layout/header";
+@import "../styles/pages/cards";

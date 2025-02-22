@@ -1,15 +1,36 @@
 .card{
-  display: flex;
-  flex-direction: column;
+  &__container{
+    display: grid;
+    gap: 2rem;
+    border: 1px solid $color-gris;
+    height: 100%;
+  }
+  &__body{
+    display: flex;
+    flex-direction: column;
+  }
 
   &__header{
     color: $color-azul;
+  }
+
+  &__description{
+
+  }
+
+  &__actions{
+    display: flex;
+    margin-top: auto;
   }
 
   &__button{
     background-color: $color-azul;
     color: $color-blanco;
     width: 100%;
-    text-align: center;
+    display: flex;
+    justify-content: center;
+    margin-bottom: auto;
+    padding: 1rem;
+    text-decoration: none;
   }
 }
