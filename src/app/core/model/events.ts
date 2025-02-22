@@ -1,4 +1,4 @@
-export interface Evento {
+export interface Evento extends isAvailableEvent {
   id: string;
   title: string;
   subtitle: string;
@@ -7,4 +7,8 @@ export interface Evento {
   startDate: string | Date;
   endDate: string | Date;
   description: string;
+}
+
+export interface isAvailableEvent {
+  isAvailable: boolean;
 }

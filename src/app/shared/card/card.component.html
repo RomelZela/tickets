@@ -19,8 +19,15 @@
     </div>
   </div>
   <div class="card__actions">
-    <a [routerLink]="eventos.id" class="card__button">
-      Comprar
-    </a>
+    @if (eventos.isAvailable) {
+      <a [routerLink]="['/event-detail', eventos.id]" class="card__button">
+        Comprar
+      </a>
+    }
+    @else {
+      <p class="card__button-disabled m-0">
+        No disponible
+      </p>
+    }
   </div>
 </div>

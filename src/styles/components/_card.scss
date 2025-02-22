@@ -32,5 +32,13 @@
     margin-bottom: auto;
     padding: 1rem;
     text-decoration: none;
+    &-disabled{
+      width: 100%;
+      background-color: $color-gris;
+      padding: 1rem;
+      display: flex;
+      justify-content: center;
+      cursor: not-allowed;
+    }
   }
 }
