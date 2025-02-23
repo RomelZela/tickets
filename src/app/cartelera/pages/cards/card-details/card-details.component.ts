@@ -7,17 +7,19 @@ import {
   Input,
   OnInit,
   signal,
+  WritableSignal,
 } from '@angular/core';
 import { CarteleraApiService } from '../../services/cartelera.api.service';
 import { CommonModule } from '@angular/common';
 import { DetailsEvents, Session } from '../../../../core/model/details-events';
 import { Dates } from '../../../../core/utils/Dates';
+import { CartService } from '../../../../core/services/cart.service';
 
 @Component({
   selector: 'onebox-card-details',
   standalone: true,
   imports: [HttpClientModule, CommonModule],
-  providers: [CarteleraApiService],
+  providers: [CarteleraApiService, CartService],
   templateUrl: './card-details.component.html',
   styleUrl: './card-details.component.scss',
 })
@@ -25,20 +27,25 @@ export class CardDetailsComponent implements OnInit {
   @Input({ alias: 'id', required: true }) eventId!: string;
 
   private _carteleraApi = inject(CarteleraApiService);
+    private _cartService = inject(CartService);
 
-  detailEventSgn = signal<Partial<DetailsEvents>>({});
-  selectedTickets = signal<any>({});
+
+  detailEventSgn: WritableSignal<Partial<DetailsEvents>> = signal<Partial<DetailsEvents>>({});
+  selectedTickets: WritableSignal<any> = signal<any>({});
 
   availableEvent = computed(() => this.detailEventSgn().sessions ?? []);
 
   ngOnInit(): void {
     this.loadData();
+
   }
 
   constructor() {
     effect(() => {
       console.log(this.selectedTickets());
-    });
+
+    },
+    { allowSignalWrites: true });
   }
 
   loadData(): void {
@@ -79,6 +86,9 @@ export class CardDetailsComponent implements OnInit {
         ),
       },
     }));
+
+    this._cartService.setItemsCart(this.selectedTickets())
+
   }
 
   increaseSelection(sessionSelected: Session) {
@@ -99,5 +109,7 @@ export class CardDetailsComponent implements OnInit {
         },
       }));
     }
+    this._cartService.setItemsCart(this.selectedTickets())
+
   }
 }
