@@ -5,7 +5,7 @@ import { CarteleraApiService } from '../services/cartelera.api.service';
 import { Evento } from '../../../core/model/events';
 import { HttpClientModule } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
-import { Dates } from '../../../core/utils/dates';
+import { Dates } from '../../../core/utils/Dates';
 
 @Component({
   selector: 'onebox-cards',

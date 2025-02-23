@@ -1,3 +1,8 @@
+export interface Session {
+  date: string | Date;
+  availability: string | number;
+}
+
 export interface DetailsEvents {
   event: {
     id: string;
@@ -5,8 +10,5 @@ export interface DetailsEvents {
     subtitle: string;
     image: string;
   };
-  sessions: {
-    date: string;
-    availability: string;
-  }[];
+  sessions: Session[];
 }
