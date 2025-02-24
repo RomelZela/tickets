@@ -1,6 +1,7 @@
 export interface Session {
   date: string | Date;
   availability: string | number;
+  cart: number | undefined
 }
 
 export interface DetailsEvents {

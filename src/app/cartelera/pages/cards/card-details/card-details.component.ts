@@ -14,11 +14,13 @@ import { CommonModule } from '@angular/common';
 import { DetailsEvents, Session } from '../../../../core/model/details-events';
 import { Dates } from '../../../../core/utils/Dates';
 import { CartService } from '../../../../core/services/cart.service';
+import { CartComponent } from '../../../../shared/cart/cart.component';
+import { Evento } from '../../../../core/model/events';
 
 @Component({
   selector: 'onebox-card-details',
   standalone: true,
-  imports: [HttpClientModule, CommonModule],
+  imports: [HttpClientModule, CommonModule, CartComponent],
   providers: [CarteleraApiService, CartService],
   templateUrl: './card-details.component.html',
   styleUrl: './card-details.component.scss',
@@ -27,89 +29,66 @@ export class CardDetailsComponent implements OnInit {
   @Input({ alias: 'id', required: true }) eventId!: string;
 
   private _carteleraApi = inject(CarteleraApiService);
-    private _cartService = inject(CartService);
+  private _cartService = inject(CartService);
 
-
-  detailEventSgn: WritableSignal<Partial<DetailsEvents>> = signal<Partial<DetailsEvents>>({});
-  selectedTickets: WritableSignal<any> = signal<any>({});
-
-  availableEvent = computed(() => this.detailEventSgn().sessions ?? []);
+  eventSgn: WritableSignal<Partial<DetailsEvents>> = signal<
+    Partial<DetailsEvents>
+  >({});
 
   ngOnInit(): void {
     this.loadData();
-
-  }
-
-  constructor() {
-    effect(() => {
-      console.log(this.selectedTickets());
-
-    },
-    { allowSignalWrites: true });
   }
 
   loadData(): void {
-    this._carteleraApi.getEventInfo(this.eventId).subscribe((event) => {
-      event.sessions = event.sessions.map((session) => ({
+    this._carteleraApi.getEventInfo(this.eventId).subscribe((evento) => {
+      evento.sessions = evento.sessions.map((session) => ({
         ...session,
         date: Dates.convertStringToDate(session.date),
         availability: Number(session.availability),
+        cart: 0,
       }));
 
-      event.sessions.sort(
+      evento.sessions.sort(
         (a, b) => (a.date as Date).getTime() - (b.date as Date).getTime()
       );
 
-      this.detailEventSgn.set(event);
-
-      const initialSelected: { [key: string]: number } = {};
-      event.sessions.forEach((session) => {
-        initialSelected[session.date.toString()] = 0;
-      });
-      this.selectedTickets.set({
-        ...this.detailEventSgn().event,
-        initialSelected,
-      });
+      this.eventSgn.set(evento);
     });
   }
 
   decreaseSelection(sessionSelected: Session) {
-    const sessionKey = sessionSelected.date.toString();
+    this.eventSgn.set({
+      ...this.eventSgn(),
+      sessions: this.eventSgn().sessions!.map((session) =>
+        session.date === sessionSelected.date
+          ? {
+              ...session,
+              cart: session.cart === 0 ? session.cart : (session.cart ?? 0) - 1,
+            }
+          : session
+      ),
+    });
 
-    this.selectedTickets.update((selected) => ({
-      ...selected,
-      initialSelected: {
-        ...selected.initialSelected,
-        [sessionKey]: Math.max(
-          0,
-          (selected.initialSelected[sessionKey] || 0) - 1
-        ),
-      },
-    }));
-
-    this._cartService.setItemsCart(this.selectedTickets())
-
+    this._cartService.setItemsCart(this.eventSgn())
   }
 
   increaseSelection(sessionSelected: Session) {
-    const sessionKey = sessionSelected.date.toString();
-    const originalAvailability = this.detailEventSgn().sessions!.find(
-      (s) => s.date === sessionSelected.date
-    )!.availability;
+    console.log(sessionSelected);
+    this.eventSgn.set({
+      ...this.eventSgn(),
+      sessions: this.eventSgn().sessions!.map((session) =>
+        session.date === sessionSelected.date
+          ? {
+              ...session,
+              cart:
+                session.cart === session.availability
+                  ? session.cart
+                  : (session.cart ?? 0) + 1,
+            }
+          : session
+      ),
+    });
 
-    if (
-      this.selectedTickets().initialSelected[sessionKey] <
-      Number(originalAvailability)
-    ) {
-      this.selectedTickets.update((selected) => ({
-        ...selected,
-        initialSelected: {
-          ...selected.initialSelected,
-          [sessionKey]: (selected.initialSelected[sessionKey] || 0) + 1,
-        },
-      }));
-    }
-    this._cartService.setItemsCart(this.selectedTickets())
-
+    this._cartService.setItemsCart(this.eventSgn())
   }
 }

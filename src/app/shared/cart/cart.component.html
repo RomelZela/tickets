@@ -1,0 +1,26 @@
+@for (selectedTicket of ticketSelected; track selectedTicket.id) {
+  <p><strong>
+    {{ selectedTicket.event.title }}
+  </strong></p>
+<div>
+  <ul>
+    @for(session of selectedTicket.sessions; track sessions) {
+      @if(session.cart > 0) {
+
+        <li class="d-flex py-2 justify-content-between">
+          <p>
+            {{ session.date | date : "dd/MM/yy" }}
+          </p>
+          <p class="d-flex">
+            x{{ session.cart }}
+            <button (click)="increaseSelection(selectedTicket)">
+              <img src="../../../assets/img/trash.png" width="18px" alt="papelera" />
+            </button>
+          </p>
+        </li>
+      }
+
+    }
+  </ul>
+</div>
+}
