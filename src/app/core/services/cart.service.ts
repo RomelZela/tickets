@@ -61,7 +61,6 @@ export class CartService {
 
 
   public increaseSelection(sessionSelected: Session): void {
-    console.log(sessionSelected);
     this.eventSgn.set({
       ...this.eventSgn(),
       sessions: this.eventSgn().sessions!.map((session) =>
