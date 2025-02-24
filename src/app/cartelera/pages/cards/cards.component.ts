@@ -16,6 +16,7 @@ import { Dates } from '../../../core/utils/Dates';
   styleUrl: './cards.component.scss',
 })
 export class CardsComponent implements OnInit {
+
   private _carteleraApi = inject(CarteleraApiService);
 
   eventos: Evento[] = [];

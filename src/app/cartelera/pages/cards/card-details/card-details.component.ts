@@ -1,27 +1,18 @@
 import { HttpClientModule } from '@angular/common/http';
-import {
-  Component,
-  computed,
-  effect,
-  inject,
-  Input,
-  OnInit,
-  signal,
-  WritableSignal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, Input, OnInit } from '@angular/core';
 import { CarteleraApiService } from '../../services/cartelera.api.service';
-import { CommonModule } from '@angular/common';
-import { DetailsEvents, Session } from '../../../../core/model/details-events';
+import { CommonModule, Location } from '@angular/common';
+import { Session } from '../../../../core/model/details-events';
 import { Dates } from '../../../../core/utils/Dates';
 import { CartService } from '../../../../core/services/cart.service';
 import { CartComponent } from '../../../../shared/cart/cart.component';
-import { Evento } from '../../../../core/model/events';
 
 @Component({
   selector: 'onebox-card-details',
   standalone: true,
   imports: [HttpClientModule, CommonModule, CartComponent],
   providers: [CarteleraApiService, CartService],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './card-details.component.html',
   styleUrl: './card-details.component.scss',
 })
@@ -30,10 +21,9 @@ export class CardDetailsComponent implements OnInit {
 
   private _carteleraApi = inject(CarteleraApiService);
   private _cartService = inject(CartService);
+  private _location = inject(Location);
 
-  eventSgn: WritableSignal<Partial<DetailsEvents>> = signal<
-    Partial<DetailsEvents>
-  >({});
+  eventsSgn = computed(() => this._cartService.eventSgn());
 
   ngOnInit(): void {
     this.loadData();
@@ -52,43 +42,18 @@ export class CardDetailsComponent implements OnInit {
         (a, b) => (a.date as Date).getTime() - (b.date as Date).getTime()
       );
 
-      this.eventSgn.set(evento);
+      this._cartService.eventSgn.set(evento);
     });
   }
 
   decreaseSelection(sessionSelected: Session) {
-    this.eventSgn.set({
-      ...this.eventSgn(),
-      sessions: this.eventSgn().sessions!.map((session) =>
-        session.date === sessionSelected.date
-          ? {
-              ...session,
-              cart: session.cart === 0 ? session.cart : (session.cart ?? 0) - 1,
-            }
-          : session
-      ),
-    });
-
-    this._cartService.setItemsCart(this.eventSgn())
+    this._cartService.decreaseSelection(sessionSelected);
+  }
+  increaseSelection(sessionSelected: Session) {
+    this._cartService.increaseSelection(sessionSelected);
   }
 
-  increaseSelection(sessionSelected: Session) {
-    console.log(sessionSelected);
-    this.eventSgn.set({
-      ...this.eventSgn(),
-      sessions: this.eventSgn().sessions!.map((session) =>
-        session.date === sessionSelected.date
-          ? {
-              ...session,
-              cart:
-                session.cart === session.availability
-                  ? session.cart
-                  : (session.cart ?? 0) + 1,
-            }
-          : session
-      ),
-    });
-
-    this._cartService.setItemsCart(this.eventSgn())
+  goBack() {
+    this._location.back();
   }
 }

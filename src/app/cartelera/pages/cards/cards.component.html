@@ -1,7 +1,12 @@
 <div class="container">
   <div class="row d-flex justify-content-center">
-    @for (evento of eventos; track evento.id) {
+    @defer (when eventos) {
+
+      @for (evento of eventos; track evento.id) {
         <onebox-card class="col-12 col-md-5 m-2" [eventos]="evento"></onebox-card>
+      }
+    } @placeholder {
+      Cargando...
     }
   </div>
 </div>

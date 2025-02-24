@@ -1,39 +1,49 @@
+<button (click)="goBack()">Volver</button>
 <div class="container">
   <div class="row">
     <div class="col-12 col-md-6">
-        <div class="details__list">
-          @defer(when eventSgn()) {
+      <div class="details__list">
+        @defer(when eventsSgn()) { @for (detailsEvent of eventsSgn().sessions;
+        track detailsEvent.date) {
 
-            @for (detailsEvent of eventSgn().sessions; track detailsEvent.date) {
+        <div class="details__session d-flex justify-content-between p-2">
+          <p>
+            Fecha: {{ detailsEvent.date | date : "dd/MM/yyyy" }},
+            Disponibilidad: {{ detailsEvent.availability }}
+          </p>
 
-              <div class="details__session d-flex justify-content-between p-2">
-
-                <p>
-                  Fecha: {{ detailsEvent.date | date: "dd/MM/yyyy" }}, Disponibilidad: {{ detailsEvent.availability }}
-                </p>
-
-                <div class="details__actions d-flex ">
-                    <button class="details__button" (click)="decreaseSelection(detailsEvent)">
-                      <img src="../../../../../assets/icons/minus.svg" width="16px" alt="minus icon">
-                    </button>
-                    <p class="d-flex px-1">
-                      {{ detailsEvent.cart }}
-                    </p>
-                    <button class="details__button" (click)="increaseSelection(detailsEvent)">
-                      <img src="../../../../../assets/icons/plus.svg" width="16px" alt="plus icon">
-                    </button>
-                  </div>
-                </div>
-
-              }
-            } @placeholder {
-              cargando...
-            }
-            </div>
+          <div class="details__actions d-flex">
+            <button
+              class="details__button"
+              (click)="decreaseSelection(detailsEvent)"
+            >
+              <img
+                src="../../../../../assets/icons/minus.svg"
+                width="16px"
+                alt="minus icon"
+              />
+            </button>
+            <p class="d-flex px-1">
+              {{ detailsEvent.cart }}
+            </p>
+            <button
+              class="details__button"
+              (click)="increaseSelection(detailsEvent)"
+            >
+              <img
+                src="../../../../../assets/icons/plus.svg"
+                width="16px"
+                alt="plus icon"
+              />
+            </button>
           </div>
+        </div>
+
+        } } @placeholder { cargando... }
+      </div>
+    </div>
 
     <div class="col-12 col-md-6">
-
       <onebox-cart></onebox-cart>
     </div>
   </div>
