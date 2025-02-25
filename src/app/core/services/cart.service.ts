@@ -2,7 +2,8 @@ import { effect, Injectable, signal, WritableSignal } from '@angular/core';
 import { DetailsEvents, Session } from '../model/details-events';
 import { BehaviorSubject } from 'rxjs';
 
-export const DEFAULT_EVENTO: DetailsEvents[] = [{
+export const DEFAULT_EVENTO: DetailsEvents[] = [
+  {
     event: {
       id: '',
       title: '',
@@ -16,25 +17,34 @@ export const DEFAULT_EVENTO: DetailsEvents[] = [{
   providedIn: 'root',
 })
 export class CartService {
-  eventSgn: WritableSignal<Partial<DetailsEvents>> = signal<Partial<DetailsEvents>>({});
+  eventOpenedSgn: WritableSignal<Partial<DetailsEvents>> = signal<
+    Partial<DetailsEvents>
+  >({});
 
-  private cartBe = new BehaviorSubject<DetailsEvents[]>(DEFAULT_EVENTO);
-  cart$ = this.cartBe.asObservable();
+  private cartStored = new BehaviorSubject<DetailsEvents[]>(DEFAULT_EVENTO);
+  cart$ = this.cartStored.asObservable();
 
   constructor() {
-    effect( () => {
-      this.cart$.subscribe( (value) => {
-        localStorage.setItem('cart', JSON.stringify(value));
-      })
+    if(localStorage.getItem('cart')){
+      this.cartStored.next(JSON.parse(localStorage.getItem('cart')!));
+    }
 
-    })
+    effect(() => {
+      this.cart$.subscribe((value) => {
+        localStorage.setItem('cart', JSON.stringify(value));
+      });
+    });
   }
 
   public decreaseSelection(sessionSelected: Session): void {
+    this.updateEventOpenedSignal(sessionSelected);
+    this.updateCartStored(sessionSelected);
+  }
 
-    this.eventSgn.set({
-      ...this.eventSgn(),
-      sessions: this.eventSgn().sessions!.map((session) =>
+  private updateEventOpenedSignal(sessionSelected: Session): void {
+    this.eventOpenedSgn.set({
+      ...this.eventOpenedSgn(),
+      sessions: this.eventOpenedSgn().sessions!.map((session) =>
         session.date === sessionSelected.date
           ? {
               ...session,
@@ -43,27 +53,32 @@ export class CartService {
           : session
       ),
     });
+  }
 
-    let updatedCart = this.cartBe.getValue().map((event: DetailsEvents) => ({
-      ...event,
-      sessions: event.sessions.map((session) =>
-        session.date === sessionSelected.date
-          ? {
-              ...session,
-              cart: session.cart === 0 ? session.cart : (session.cart ?? 0) - 1,
-            }
-          : session
-      ),
-    }));
+  private updateCartStored(sessionSelected: Session): void {
+    let updatedCart = this.cartStored
+      .getValue()
+      .map((event: DetailsEvents) => ({
+        ...event,
+        sessions: event.sessions.map((session) =>
+          session.date === sessionSelected.date
+            ? {
+                ...session,
+                cart: session.cart === 0 ? session.cart : (session.cart ?? 0) - 1,
+              }
+            : session
+        ),
+      }));
 
-    this.cartBe.next(updatedCart);
+    this.cartStored.next(updatedCart);
+    localStorage.setItem('cart', JSON.stringify(updatedCart));
   }
 
 
   public increaseSelection(sessionSelected: Session): void {
-    this.eventSgn.set({
-      ...this.eventSgn(),
-      sessions: this.eventSgn().sessions!.map((session) =>
+    this.eventOpenedSgn.set({
+      ...this.eventOpenedSgn(),
+      sessions: this.eventOpenedSgn().sessions!.map((session) =>
         session.date === sessionSelected.date
           ? {
               ...session,
@@ -75,11 +90,11 @@ export class CartService {
           : session
       ),
     });
-    this.saveItemsCart(this.eventSgn());
+    this.saveItemsCart(this.eventOpenedSgn());
   }
 
   private saveItemsCart(addEvent: any): void {
-    let cart = this.cartBe.getValue();
+    let cart = this.cartStored.getValue();
     cart[0].event.id.length === 0 ? cart.shift() : cart;
 
     const existingIndex = cart.findIndex(
@@ -91,6 +106,6 @@ export class CartService {
     } else {
       cart.push(addEvent);
     }
-    this.cartBe.next(cart);
+    this.cartStored.next(cart);
   }
 }

@@ -12,7 +12,6 @@ import { DetailsEvents, Session } from '../../core/model/details-events';
   styleUrl: './cart.component.scss',
 })
 export class CartComponent implements OnInit {
-
   private _cartService = inject(CartService);
 
   ticketSelected: DetailsEvents[] = [];
@@ -25,5 +24,8 @@ export class CartComponent implements OnInit {
 
   removeItem(session: Session): void {
     this._cartService.decreaseSelection(session);
+  }
+  cleanTitle(session: any) {
+    return session.find((session: { cart: any }) => Number(session.cart) > 0);
   }
 }

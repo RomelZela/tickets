@@ -23,7 +23,7 @@ export class CardDetailsComponent implements OnInit {
   private _cartService = inject(CartService);
   private _location = inject(Location);
 
-  eventsSgn = computed(() => this._cartService.eventSgn());
+  eventsSgn = computed(() => this._cartService.eventOpenedSgn());
 
   ngOnInit(): void {
     this.loadData();
@@ -42,7 +42,7 @@ export class CardDetailsComponent implements OnInit {
         (a, b) => (a.date as Date).getTime() - (b.date as Date).getTime()
       );
 
-      this._cartService.eventSgn.set(evento);
+      this._cartService.eventOpenedSgn.set(evento);
     });
   }
 
