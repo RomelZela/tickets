@@ -1,12 +1,18 @@
-@for (selectedTicket of ticketSelected; track selectedTicket.event.id) {
-<p>
-  <strong>
-    {{ selectedTicket.event.title }}
-  </strong>
-</p>
+@for (selectedTicket of ticketSelected; track selectedTicket) {
+  @if(cleanTitle(selectedTicket.sessions)) {
+
+    <p>
+      <strong>
+        {{ selectedTicket.event.title }}
+      </strong>
+    </p>
+  }
 <div>
   <ul>
     @for(session of selectedTicket.sessions; track session) { @if(session.cart! > 0) {
+
+
+
 
     <li class="d-flex py-2 justify-content-between">
       <p>
